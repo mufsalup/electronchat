@@ -5,10 +5,13 @@
         <!-- Sets the encoding to UTF-8 -->
         <meta charset="UTF-8">
         <!-- In electron we could run scripts from third party servers, we add this to only run scripts from ourselfs -->
+        <!-- We can add 'unsafe-inline' if we want to use inline scripts. However they are not safe! -->
         <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
         <title>Electron Chat</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <div id="electronChat">
+        </div>
     </body>
+    <script src="./build/js/app.js"></script>
 </html>
