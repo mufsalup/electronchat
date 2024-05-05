@@ -1,7 +1,6 @@
 // app <- Main Process of Electron
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow, ipcMain, Notification} = require('electron');
 const path = require('path');
-const electron = require("electron");
 const appInDevelopmentMode = !app.isPackaged;
 
 // Function to create a new window
@@ -14,8 +13,10 @@ const createWindow = () => {
         webPreferences: {
             // Allows us to use node modules (not really safe) We´ll learn other ways to have node modules in the render process (therefore should be set to false)
             nodeIntegration: false,
-            // Feature that ensures that preload scripts and Electrons intern logic run in separate context
-            contextIsolation: true,
+            // Feature that ensures that preload scripts and Electrons intern logic run in separate context (for security reasons)
+            //contextIsolation: true, <-- true per default
+            // Let us use the preload file, which is needed to safely use nodeIntegrations
+            preload: path.join(__dirname, 'preload.js'),
         }
     });
 
@@ -34,6 +35,12 @@ if (appInDevelopmentMode) {
 
 // call the createWindow method, when the main process is ready to display something
 app.whenReady().then(createWindow);
+
+// react on notify events emitted by ipcRenderer with ipcMain, usually with (event, ...params)
+ipcMain.on('notify', (_,title, message) => {
+    // creates a notification and sends it using show()
+    new Notification({title: title, body: message}).show();
+})
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
